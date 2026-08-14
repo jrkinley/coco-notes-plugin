@@ -1,8 +1,10 @@
 # coco-notes
 
-A CoCo (Cortex Code) plugin that does the work around customer-facing work. It writes up your meetings while you are still in them, briefs you before a call so you walk in knowing the story, and remembers what you promised people. It answers questions across everything you have ever written down, keeps your Salesforce use cases honest, and, when the occasion calls for it, builds you a narrated deck.
+A CoCo (Cortex Code) plugin that does the work around customer-facing work. It writes up your meetings while you are still in them, briefs you before a call so you walk in knowing the story, and remembers what you promised people. It answers questions across everything you have ever written down, keeps your Salesforce hygiene respectable for almost no effort, and, when the occasion calls for it, builds you a cinematic, narrated deck.
 
 It manages this because of the scaffolding underneath: a folder structure for your notes, a profile of you and your accounts, a guide to how you write, and a set of skills that use all three. That is what a harness is. The skills are generic, the context is yours, and the output is specific to you rather than generic. Your notes are plain markdown in your own private git repo. The plugin provides the skills; your profile, writing style, and notes stay in your repo and are never shared back.
+
+Built and maintained by James Kinley, Data Engineering Specialist, EMEA.
 
 ## Why a harness matters more than the plugin
 
@@ -78,9 +80,9 @@ git push -u origin main
 
 ### Make it yours
 
-coco-notes is what I (James Kinley) use, shaped around my accounts, my workflow and my voice, so you will find opinions in it that are mine rather than universal. Treat it as a starting point, not a finished product. Change the templates, rewrite the skills, add your own, throw away what you do not use.
+coco-notes is what I use, shaped around my accounts, my workflow and my voice, so you will find opinions in it that are mine rather than universal. Treat it as a starting point, not a finished product. Change the templates, rewrite the skills, add your own, throw away what you do not use.
 
-The part worth real effort is the profile and the style guide, because that is what makes the output authentic. Rush it and you get competent generic prose you will end up rewriting, which defeats the purpose. Give it real samples of your writing and correct it when it gets your voice wrong. You want it to sound like you, not like me, a British farmer from Hampshire.
+The part worth real effort is the profile and the style guide, because that is what makes the output authentic. Rush it and you get competent generic prose you will end up rewriting, which defeats the purpose. Give it real samples of your writing and correct it when it gets your voice wrong. You want it to sound like you, not like me.
 
 ### Updating
 
