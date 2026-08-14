@@ -1,6 +1,6 @@
 # coco-notes
 
-A CoCo (Cortex Code) plugin that does the work around customer-facing work. It writes up your meetings while you are still in them, briefs you before a call so you walk in knowing the story, and remembers what you promised people. It answers questions across everything you have ever written down, keeps your Salesforce use cases honest, and, when the occasion calls for it, builds you a narrated deck.
+A CoCo (Cortex Code) plugin that does the work around customer-facing work. It writes up your meetings while you are still in them, briefs you before a call so you walk in knowing the story, and remembers what you promised people. It answers questions across everything you have ever written down, keeps your Salesforce hygiene respectable for almost no effort, and, when the occasion calls for it, builds you a cinematic, narrated deck.
 
 It manages this because of the scaffolding underneath: a folder structure for your notes, a profile of you and your accounts, a guide to how you write, and a set of skills that use all three. That is what a harness is. The skills are generic, the context is yours, and the output is specific to you rather than generic. Your notes are plain markdown in your own private git repo. The plugin provides the skills; your profile, writing style, and notes stay in your repo and are never shared back.
 
