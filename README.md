@@ -102,16 +102,9 @@ The canonical source of the skills lives in this repo under `skills/`.
 
 Nothing lands on `main` directly. Every change goes on a branch and through a pull request, including mine. Review is the point: a skill is a prompt that runs against other people's notes repos, so a careless edit is not a local mistake, it ships to everyone on the next publish.
 
-To ship a change:
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR. It covers the process, how a skill is put together, the naming and authoring standards, the rules for SQL in skills, and the checklist a contribution is reviewed against.
 
-1. Branch off `main`: `git switch -c <short-description>`.
-2. Edit the skill(s) under `skills/<name>/SKILL.md`. Keep each skill's directory name, its frontmatter `name:`, and its invocation name identical.
-3. If you change the onboarding scaffold, update `assets/scaffold/` (the files `note-setup` writes into a new user's repo).
-4. Bump `version` in `.cortex-plugin/plugin.json` (semver).
-5. Open a PR (`gh pr create`) and get a review. Test the skill locally from your branch before asking.
-6. Merge to `main`, then publish to the account catalog with the `share-skill-and-plugin` flow. Each republish with a higher version is what surfaces an update to installed users.
-
-Publish from `main` only, never from a branch, so that what is in the catalog always matches what is in the repo.
+Once changes are merged to `main`, a release is a deliberate act: bump `version` in `.cortex-plugin/plugin.json` on `main`, tag that commit, then publish to the account catalog with the `share-skill-and-plugin` flow. Only a republish with a higher version surfaces an update to installed users. Publish from `main` only, never from a branch, so that what is in the catalog always matches what is in the repo. Contributors do not bump the version; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Layout
 ```
@@ -124,6 +117,7 @@ coco-notes-plugin/
     _internal/{user-profile,writing-style}.md   Generic placeholders
     .gitignore
   README.md
+  CONTRIBUTING.md                Contribution process and skill-authoring standards
 ```
 
 ### Conventions
