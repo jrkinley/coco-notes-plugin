@@ -74,9 +74,13 @@ This plugin is published to the Cortex plugins catalog, and a catalog install is
 
 **Nothing in the tree may link to anything outside it.** Only the plugin tree is uploaded, so a skill pointing at `../docs` or at this file is a dead link for every installed user. `SETUP.md` in particular has to stand alone.
 
-**Root-level hidden files are not uploaded.** Publish skips them, silently, and only `.cortex-plugin/` is carried. This is why hooks are declared inline in the manifest rather than in a root `.hooks.json`: the manifest always ships, a root dotfile does not. Put nothing load-bearing in one.
+**Hidden files are not uploaded, at any depth.** Publish skips them silently, and not just at the root: a nested `assets/scaffold/.gitignore` is dropped just as surely as a root `.mcp.json`. Only the `.cortex-plugin/` manifest directory is carried. Verified by publishing and listing: 29 files on disk, 26 shipped, the three missing ones being exactly the three dotfiles.
 
-**Stage limits are 50 files, 2 MB per file, 10 MB total.** We are at 29 files and about 620 KB, so the realistic way to breach this is a skill shipping large binary assets. If yours needs more than a couple, raise it in an issue first.
+This is why hooks are declared inline in the manifest rather than in a root `.hooks.json`, and why the two dotfiles we genuinely need to ship travel without their leading dot (`assets/scaffold/gitignore`, `skills/slides-deploy/assets/dockerignore`) and are renamed by the skill that copies them. If your skill needs to ship a dotfile, do the same, and say so in the skill body so the rename is not lost.
+
+**Stage limits are 50 files, 2 MB per file, 10 MB total.** We ship 26 files at about 620 KB, so the realistic way to breach this is a skill shipping large binary assets. If yours needs more than a couple, raise it in an issue first.
+
+**`publish` shares by default.** `--to-role` and `--discoverable` read like opt-in flags but are not: a bare `cortex plugin publish` grants READ to PUBLIC and sets `DISCOVERABLE = TRUE`. It also derives the extension name from the manifest `name`, so publishing from a branch creates a new version of the live `COCO_NOTES` that everyone installs from, and the default version follows the newest. Never publish from a branch. To test a publish, use `--name` with a throwaway name and `unpublish` straight afterwards.
 
 **New prerequisites go in two places.** The manifest `description` and `SETUP.md`. The catalog does not enforce prerequisites and nothing checks them at install time, so an undocumented dependency is a consumer hitting an unexplained failure. Say what breaks without it and how the skill degrades.
 
