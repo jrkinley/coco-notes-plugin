@@ -45,7 +45,13 @@ If you want to confirm you have the right listing first, this is it:
 snow://skill_catalog/USER$JKINLEY.SKILL_SHARING.COCO_NOTES/
 ```
 
-No version in that URI, so it resolves to whatever the current default version is. Leave it unversioned and you always get the latest.
+That unversioned form identifies the listing, but do not paste it into the **Import link** field: Desktop requires a version-pinned URI there and rejects one without it. Pin the version you want instead:
+
+```
+snow://skill_catalog/USER$JKINLEY.SKILL_SHARING.COCO_NOTES/versions/version$3/
+```
+
+Searching by name avoids the question entirely, which is why it is the route above. Either way, install is a copy rather than a live link, so to move to a later version afterwards use the **Sync** button (↻) on the plugin's detail page, or `cortex plugin update`.
 
 ### First-time setup
 
