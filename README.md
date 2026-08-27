@@ -109,18 +109,21 @@ Once changes are merged to `main`, a release is a deliberate act: bump `version`
 ### Layout
 ```
 coco-notes-plugin/
-  .cortex-plugin/plugin.json     Manifest (name, description, version)
-  skills/                        The 9 skills + note-setup (canonical source)
+  .cortex-plugin/plugin.json     Manifest: name, description (carries the prerequisites), version, hooks
+  skills/                        The 10 skills (canonical source)
+  hooks/sessionstart.sh          Install-completeness check + per-session rule injection
   assets/scaffold/               What note-setup writes into a new notes repo
     COCO.md
     _templates/{meeting-note,interview-note}.md
     _internal/{user-profile,writing-style}.md   Generic placeholders
     .gitignore
+  SETUP.md                       Post-install runbook; CoCo surfaces this after a catalog install
   README.md
   CONTRIBUTING.md                Contribution process and skill-authoring standards
 ```
 
 ### Conventions
 - Skill frontmatter supports `name` and `description` only. Tool restrictions apply to agents, not skills.
-- Reference bundled assets from a skill with `${CLAUDE_PLUGIN_ROOT}/assets/...`.
-- Skills reference notes-repo-relative paths (`_templates/`, `_internal/`, `<letter>/`); they work because they run against the user's scaffolded repo, so no per-user path edits are needed.
+- Reference bundled assets from a skill with `${CORTEX_PLUGIN_ROOT}/assets/...`. Never a bare relative path, and never `${CLAUDE_PLUGIN_ROOT}`.
+- Skills reference notes-repo-relative paths (`_templates/`, `_internal/`, `<letter>/`); they work because they run against the user's scaffolded repo, so no per-user path edits are needed. A skill that depends on those paths must stop and point at `note-setup` when they are absent, rather than carrying on in a generic voice.
+- The plugin ships one `SessionStart` hook, declared inline in the manifest. It stays silent outside a notes repo, prompts for setup if the marker is missing, and otherwise injects the user's writing style and profile for the session.

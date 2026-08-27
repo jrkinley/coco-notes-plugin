@@ -7,12 +7,12 @@ description: "One-time onboarding for a new coco-notes repo: scaffold the folder
 
 Onboard a new user into a coco-notes repository. Run this once, in the folder the user wants to use for their notes (ideally empty or new). It does three things in order: scaffold the repo, bootstrap the profile, and build the writing-style guide. At the end the user has a working notes repo that every other `coco-notes` skill runs against.
 
-The scaffold sources live in this plugin's `assets/scaffold/`. Reference them with `${CLAUDE_PLUGIN_ROOT}/assets/scaffold/` when reading or copying.
+The scaffold sources live in this plugin's `assets/scaffold/`. Reference them with `${CORTEX_PLUGIN_ROOT}/assets/scaffold/` when reading or copying.
 
 ## Part A — Scaffold the repo
 
 1. **Confirm the location.** Check the current working directory. If it already contains a `COCO.md`, the repo is likely set up already: tell the user and ask whether to continue (re-run profile/style) or stop. If the folder has unrelated files, confirm this is the intended notes folder before writing anything.
-2. **Create the structure**, copying from `${CLAUDE_PLUGIN_ROOT}/assets/scaffold/`:
+2. **Create the structure**, copying from `${CORTEX_PLUGIN_ROOT}/assets/scaffold/`:
    - `COCO.md` — the project instructions.
    - `_templates/meeting-note.md` and `_templates/interview-note.md`.
    - `_internal/user-profile.md` and `_internal/writing-style.md` — the generic placeholders (Parts B and C replace these with personalised versions).
@@ -55,13 +55,25 @@ The style guide (`_internal/writing-style.md`) governs the voice of everything t
 
 ## Finish
 
-Summarise what was created and point the user to the next step:
+Write the completion marker, then summarise.
+
+1. **Write `_internal/.coco-notes-setup`.** This is how the plugin knows setup has run: a session-start hook looks for it and prompts the user to run this skill if it is absent. Contents are two lines, the plugin version from `${CORTEX_PLUGIN_ROOT}/.cortex-plugin/plugin.json` and today's date:
+
+   ```
+   plugin-version: 0.1.0
+   setup-completed: 2026-08-27
+   ```
+
+   Read the version from the manifest rather than hardcoding it, so the marker records what the user actually set up against. If Parts B or C were skipped and the placeholders are still in place, still write the marker but say so in the summary, so the user knows the voice is generic until they re-run.
+
+2. Summarise what was created and point the user to the next step:
+
 - "Your coco-notes repo is ready. Start a note any time with `/coco-notes:note-start` — it will offer to pull a meeting from your calendar. Ask across your notes with `/coco-notes:note-ask`, prep for a call with `/coco-notes:note-prep`, and roll up open actions with `/coco-notes:note-follow-ups`."
 - Mention they can re-run `/coco-notes:note-setup` any time to refresh their profile or writing style.
 - Remind them `_internal/` and their notes are theirs; nothing here is shared back to the plugin.
 
 ## Notes
 
-- This skill writes into the user's own repo, never into the plugin. Treat `${CLAUDE_PLUGIN_ROOT}/assets/scaffold/` as read-only source.
+- This skill writes into the user's own repo, never into the plugin. Treat `${CORTEX_PLUGIN_ROOT}/assets/scaffold/` as read-only source.
 - Never fabricate profile detail. If the source is thin, keep the profile short and say so.
 - The generic placeholders are a safe fallback: if the user skips Parts B and C, the repo still works with neutral defaults.
