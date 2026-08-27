@@ -7,6 +7,8 @@ description: "Creates a meeting or interview note for live note-taking during a 
 
 Create a new meeting note for live capture during a call, then process and file it afterwards.
 
+**Precondition, applies to every flow in this skill.** All four entry points below read `_internal/user-profile.md` and `_internal/writing-style.md`. If `_internal/writing-style.md` is not there, you are not in a coco-notes repo, or setup has not run. Stop, say so, and tell the user to run `/coco-notes:note-setup` or change to their notes folder. Do not create a note and do not draft in a generic voice.
+
 ## Behavior
 
 ### Starting a note
