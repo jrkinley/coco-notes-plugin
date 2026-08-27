@@ -11,11 +11,16 @@
 #
 # Written in POSIX sh and resolving its tools by absolute path on purpose. The
 # host spawns hooks in a non-interactive shell that reads only ~/.zshenv, so
-# anything relying on an interactive PATH fails silently.
+# anything relying on an interactive PATH fails silently. Invoked as
+# `/bin/sh <script>` from the manifest, because the executable bit does not
+# survive publish.
 #
-# Output contract: stdout that is not valid JSON is injected verbatim as
-# additionalContext, so this script prints plain text. Silence means no
-# injection, which is the correct behaviour outside a notes repo.
+# Output contract: a single JSON object on stdout with an additionalContext
+# field. The hooks docs say non-JSON stdout is also accepted and treated as
+# additionalContext, but JSON is the form both the docs and the internal plugin
+# guide document as primary, and a hook whose output is silently ignored is
+# indistinguishable from a hook that never ran. So emit the documented form.
+# Printing nothing at all is the deliberate no-op, used outside a notes repo.
 
 set -u
 
@@ -24,10 +29,30 @@ SED=/usr/bin/sed
 HEAD=/usr/bin/head
 WC=/usr/bin/wc
 GREP=/usr/bin/grep
+AWK=/usr/bin/awk
 
 # Cap the injected payload. A long style guide should not dominate the session
 # window, and a runaway file should not break session start at all.
 MAX_BYTES=12000
+
+# Escape a file's contents for embedding in a JSON string. Order matters:
+# backslashes first, or later escapes get double-escaped. Newlines are folded
+# last, via awk's output record separator, which sidesteps the awk gsub
+# replacement-string ambiguity around backslashes.
+json_escape_file() {
+  "$HEAD" -c "$MAX_BYTES" "$1" \
+    | "$SED" -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e 's/	/\\t/g' -e 's/\r//g' \
+    | "$AWK" 'BEGIN { ORS = "\\n" } { print }'
+}
+
+# Escape a plain string for the same purpose.
+json_escape_string() {
+  printf '%s' "$1" | "$SED" -e 's/\\/\\\\/g' -e 's/"/\\"/g'
+}
+
+emit_context() {
+  printf '{"additionalContext":"%s"}\n' "$1"
+}
 
 # The host pipes event context as JSON on stdin, including cwd. Prefer that over
 # PWD, but never depend on it: no jq here, and the field is not worth a hard
@@ -71,27 +96,29 @@ elif [ -f "$STYLE" ] && ! "$GREP" -q "$PLACEHOLDER_SENTINEL" "$STYLE" 2>/dev/nul
 fi
 
 if [ "$setup_done" = no ]; then
-  printf '%s\n' "coco-notes: this looks like a notes repo, but setup has not completed: no _internal/.coco-notes-setup marker, and no personalised writing-style guide. Tell the user their coco-notes install is incomplete and to run /coco-notes:note-setup in this folder to finish it. Until then, do not draft prose in a guessed voice: the writing-style guide is still the generic placeholder. The full runbook is in SETUP.md at the plugin root."
+  emit_context "coco-notes: this looks like a notes repo, but setup has not completed: no _internal/.coco-notes-setup marker, and no personalised writing-style guide. Tell the user their coco-notes install is incomplete and to run /coco-notes:note-setup in this folder to finish it. Until then, do not draft prose in a guessed voice: the writing-style guide is still the generic placeholder. The full runbook is in SETUP.md at the plugin root."
   exit 0
 fi
 
-# Job 2: inject the operating rules for this session.
-printf '%s\n' "coco-notes: session context loaded from $REPO. The following is the user's own profile and writing-style guide. Apply the writing style to every piece of prose you draft for them, in this session and in any coco-notes skill you run."
+# Job 2: inject the operating rules for this session. Build the payload as one
+# escaped JSON string, then emit it in a single object.
+PAYLOAD="coco-notes: session context loaded from $(json_escape_string "$REPO"). The following is the user's own profile and writing-style guide. Apply the writing style to every piece of prose you draft for them, in this session and in any coco-notes skill you run.\\n"
 
-emit_file() {
+append_file() {
   _label=$1
   _path=$2
   [ -f "$_path" ] || return 0
-  printf '\n--- %s (%s) ---\n' "$_label" "$_path"
-  "$HEAD" -c "$MAX_BYTES" "$_path"
+  _body=$(json_escape_file "$_path")
+  PAYLOAD="$PAYLOAD\\n--- $(json_escape_string "$_label") ---\\n$_body"
   _size=$("$WC" -c <"$_path" 2>/dev/null | "$SED" 's/[^0-9]//g')
   if [ -n "${_size:-}" ] && [ "$_size" -gt "$MAX_BYTES" ]; then
-    printf '\n[truncated at %s bytes of %s. Read %s directly if you need the rest.]\n' \
-      "$MAX_BYTES" "$_size" "$_path"
+    PAYLOAD="$PAYLOAD\\n[truncated at $MAX_BYTES bytes of $_size. Read $(json_escape_string "$_path") directly if you need the rest.]\\n"
   fi
 }
 
-emit_file "Writing style" "$STYLE"
-emit_file "User profile" "$PROFILE"
+append_file "Writing style" "$STYLE"
+append_file "User profile" "$PROFILE"
+
+emit_context "$PAYLOAD"
 
 exit 0
