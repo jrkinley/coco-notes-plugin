@@ -54,8 +54,8 @@ If the role lacks any of these and cannot be granted them, stop and explain. Do 
 
 ## A2: Build files
 
-Three files live beside `index.html`. Templates in this skill's `assets/`:
-- `Dockerfile`: nginx:alpine, copies `index.html` and `assets/`, exposes 8080.
+Three files live beside `index.html`. Templates ship with this skill at `${CORTEX_PLUGIN_ROOT}/skills/slides-deploy/assets/`, and are always read through that prefix. The `assets/` the `Dockerfile` copies is the deck's own folder, which is why that one stays bare.
+- `Dockerfile`: nginx:alpine, copies `index.html` and the deck's `assets/`, exposes 8080.
 - `nginx.conf`: serves on 8080 **and answers `/healthcheck` with 200**. The SPCS readiness probe hits `/healthcheck`; without it the service never becomes READY.
 - `.dockerignore`: keeps `.DS_Store`, `tools/`, zips, `Dockerfile`, and `.dockerignore` itself out of the image. Do not add `nginx.conf` to it: the `Dockerfile` copies that file, so excluding it fails the build.
 

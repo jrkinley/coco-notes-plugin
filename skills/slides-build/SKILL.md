@@ -43,11 +43,13 @@ These reflect how the author works. Keep them unless the user overrides:
 - If the user has none yet, use the **built-in branded CSS gradient fallbacks** (`.bg-title/.bg-a/.bg-b/.bg-c/.bg-cta`) so the deck still looks finished, and offer to whiten a provided SVG/PNG logo to match once they supply one.
 - Gradient fallbacks are the only acceptable stand-in. Do not substitute stock or generated imagery.
 
-**Snowflake brand marks: always bundled, always placed the same way.** The skill ships the two Snowflake marks in its own `assets/` folder (`snowflake-logo-reverse.png`, `snowflake-bug-reverse.png`). Copy both into every new deck's `assets/` and always use them in these fixed positions. This is house style, not optional, and it is the one logo case the skill does source itself (they are Snowflake's own marks, not a customer's):
+**Snowflake brand marks: always bundled, always placed the same way.** The skill ships the two Snowflake marks at `${CORTEX_PLUGIN_ROOT}/skills/slides-build/assets/` (`snowflake-logo-reverse.png`, `snowflake-bug-reverse.png`). Copy both into every new deck's `assets/` and always use them in these fixed positions. This is house style, not optional, and it is the one logo case the skill does source itself (they are Snowflake's own marks, not a customer's):
 
 - **`snowflake-logo-reverse.png`** sits in the **title slide eyebrow**, inside the `.cobrand` row, paired with the customer logo and a separator (`customer logo | Snowflake`). Title slide only.
 - **`snowflake-bug-reverse.png`** is fixed in the **bottom-right corner of every slide** via the `.logo-sf` element. It lives outside `.deck`, so it shows on all slides automatically.
-- Keep the `onerror` text fallback on both `<img>` tags so a missing file never breaks a slide, but the files should always be present in `assets/`.
+- Keep the `onerror` text fallback on both `<img>` tags so a missing file never breaks a slide, but the files should always be present in the deck's `assets/`.
+
+**Two different `assets/` folders, do not confuse them.** Files this skill ships are read from `${CORTEX_PLUGIN_ROOT}/skills/slides-build/assets/`, always with that prefix. Every bare `assets/...` path below is relative to the deck you are building, and stays bare because it ends up in `index.html`.
 
 ## Deck mechanics (the contract)
 
@@ -95,9 +97,9 @@ Keep it flexible; the point is a clear beginning, proof in the middle, and a con
 
 ### Step 3: Build `index.html` from the scaffold
 
-Copy `assets/scaffold.html` to `index.html` and add one `<section class="slide">` per slide. Key pieces are reproduced under "The scaffold" below so you can build without loading the asset.
+Copy `${CORTEX_PLUGIN_ROOT}/skills/slides-build/assets/scaffold.html` to the deck's `index.html` and add one `<section class="slide">` per slide. Key pieces are reproduced under "The scaffold" below so you can build without loading the asset.
 
-Also copy the two bundled Snowflake marks from the skill's `assets/` into the deck's `assets/`: `snowflake-logo-reverse.png` (title-slide eyebrow) and `snowflake-bug-reverse.png` (fixed bottom-right on every slide). The scaffold already references both; see "Snowflake brand marks" above for placement.
+Also copy the two bundled Snowflake marks from `${CORTEX_PLUGIN_ROOT}/skills/slides-build/assets/` into the deck's `assets/`: `snowflake-logo-reverse.png` (title-slide eyebrow) and `snowflake-bug-reverse.png` (fixed bottom-right on every slide). The scaffold already references both; see "Snowflake brand marks" above for placement.
 
 ### Step 4: Refine the copy (suggest, then apply)
 
@@ -131,7 +133,7 @@ Much of the work is surgical edits to a finished deck, not building from scratch
 
 ## The scaffold
 
-The full working base deck (head, CSS system, one title slide, controls, and the nav/narration script) is in `assets/scaffold.html`. Key pieces:
+The full working base deck (head, CSS system, one title slide, controls, and the nav/narration script) is in `${CORTEX_PLUGIN_ROOT}/skills/slides-build/assets/scaffold.html`. Key pieces:
 
 **CSS colour tokens (`:root`):**
 ```css
