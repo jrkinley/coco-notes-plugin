@@ -57,7 +57,7 @@ If the role lacks any of these and cannot be granted them, stop and explain. Do 
 Three files live beside `index.html`. Templates in this skill's `assets/`:
 - `Dockerfile`: nginx:alpine, copies `index.html` and `assets/`, exposes 8080.
 - `nginx.conf`: serves on 8080 **and answers `/healthcheck` with 200**. The SPCS readiness probe hits `/healthcheck`; without it the service never becomes READY.
-- `.dockerignore`: keeps `.DS_Store`, `tools/`, zips, and the build files out of the image.
+- `.dockerignore`: keeps `.DS_Store`, `tools/`, zips, `Dockerfile`, and `.dockerignore` itself out of the image. Do not add `nginx.conf` to it: the `Dockerfile` copies that file, so excluding it fails the build.
 
 Copy all three into the deck directory before building.
 

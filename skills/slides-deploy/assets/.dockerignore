@@ -2,5 +2,4 @@
 tools/
 *.zip
 Dockerfile
-nginx.conf
 .dockerignore
