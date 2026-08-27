@@ -23,6 +23,7 @@ CAT=/bin/cat
 SED=/usr/bin/sed
 HEAD=/usr/bin/head
 WC=/usr/bin/wc
+GREP=/usr/bin/grep
 
 # Cap the injected payload. A long style guide should not dominate the session
 # window, and a runaway file should not break session start at all.
@@ -49,9 +50,28 @@ MARKER="$REPO/_internal/.coco-notes-setup"
 STYLE="$REPO/_internal/writing-style.md"
 PROFILE="$REPO/_internal/user-profile.md"
 
-# Job 1: setup has never completed. Point at the fix rather than half-working.
-if [ ! -f "$MARKER" ]; then
-  printf '%s\n' "coco-notes: this looks like a notes repo, but setup has not completed (no _internal/.coco-notes-setup marker). Tell the user their coco-notes install is incomplete and to run /coco-notes:note-setup in this folder to finish it. Until then, do not draft prose in a guessed voice: the writing-style guide may be a placeholder. The full runbook is in SETUP.md at the plugin root."
+# Job 1: has setup completed?
+#
+# The marker is the signal, but it only exists for repos scaffolded by a version
+# of this plugin that writes it. A repo set up before then is fully configured and
+# has no marker, so testing the marker alone would nag every existing user and,
+# worse, skip the injection below for exactly the people who have a personalised
+# style guide to inject.
+#
+# So fall back to evidence: a writing-style.md that is not the shipped placeholder
+# means someone completed the interview, whatever version did it. The placeholder
+# has carried this sentinel line since 0.1.0.
+PLACEHOLDER_SENTINEL="Placeholder style guide"
+
+setup_done=no
+if [ -f "$MARKER" ]; then
+  setup_done=yes
+elif [ -f "$STYLE" ] && ! "$GREP" -q "$PLACEHOLDER_SENTINEL" "$STYLE" 2>/dev/null; then
+  setup_done=yes
+fi
+
+if [ "$setup_done" = no ]; then
+  printf '%s\n' "coco-notes: this looks like a notes repo, but setup has not completed: no _internal/.coco-notes-setup marker, and no personalised writing-style guide. Tell the user their coco-notes install is incomplete and to run /coco-notes:note-setup in this folder to finish it. Until then, do not draft prose in a guessed voice: the writing-style guide is still the generic placeholder. The full runbook is in SETUP.md at the plugin root."
   exit 0
 fi
 

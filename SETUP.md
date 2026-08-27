@@ -24,6 +24,14 @@ If it can answer, the session-start hook is firing and the install is live. If i
 
 Outside a notes folder the hook stays deliberately silent, so run this check from inside the repo you set up.
 
+## Upgrading from an earlier version
+
+Nothing to do. If you already have a notes repo, it keeps working and your writing style is picked up as before.
+
+The detail, in case you are curious: this version introduces a `_internal/.coco-notes-setup` marker so the plugin can tell a set-up repo from a half-finished one. Repos created before the marker existed obviously do not have it, so the plugin also accepts a personalised `_internal/writing-style.md` as proof that setup ran. Your repo is recognised either way, and the marker appears on its own the next time you re-run `/coco-notes:note-setup`.
+
+Existing decks are unaffected. The `slides-*` skills now ship two files under slightly different names, but that only changes what a new deck is built from, not decks you have already built.
+
 ## Prerequisites
 
 None of these are enforced at install time. Everything here is optional in the sense that the plugin installs and runs without it; the affected skill degrades rather than crashes.
