@@ -66,23 +66,44 @@ Check for join fanout. If a join can produce more than one row per entity, eithe
 
 Describe what a query returns in terms of what it actually returns. If a column called `CALL_URL` holds meeting join links rather than recording links, the skill must not call it a recording link.
 
+## Publishing constraints
+
+This plugin is published to the Cortex plugins catalog, and a catalog install is a copy of the plugin tree on someone else's machine, not a checkout of this repo. Several things that work fine here break there. The rules below exist because of how publishing works, not because of taste, so they are not negotiable in review.
+
+**Reference bundled files through `${CORTEX_PLUGIN_ROOT}`.** Never a bare relative path, and never `${CLAUDE_PLUGIN_ROOT}`. A bare `assets/scaffold.html` resolves against the user's working directory, which is their notes repo, not the plugin. The `slides-*` skills are the trap here, because they use `assets/` for two different things: files the plugin ships, which take the prefix, and the deck being built, which stays bare. Say which you mean.
+
+**Nothing in the tree may link to anything outside it.** Only the plugin tree is uploaded, so a skill pointing at `../docs` or at this file is a dead link for every installed user. `SETUP.md` in particular has to stand alone.
+
+**Root-level hidden files are not uploaded.** Publish skips them, silently, and only `.cortex-plugin/` is carried. This is why hooks are declared inline in the manifest rather than in a root `.hooks.json`: the manifest always ships, a root dotfile does not. Put nothing load-bearing in one.
+
+**Stage limits are 50 files, 2 MB per file, 10 MB total.** We are at 29 files and about 620 KB, so the realistic way to breach this is a skill shipping large binary assets. If yours needs more than a couple, raise it in an issue first.
+
+**New prerequisites go in two places.** The manifest `description` and `SETUP.md`. The catalog does not enforce prerequisites and nothing checks them at install time, so an undocumented dependency is a consumer hitting an unexplained failure. Say what breaks without it and how the skill degrades.
+
+**A skill that depends on the notes repo must fail loudly when it is absent.** Reading `_internal/writing-style.md` and carrying on when it is missing is worse than stopping, because the user gets generic prose that looks like it worked. Stop and point at `note-setup`.
+
+**Verify a publish, do not assume it.** Flat verbatim upload is CLI-version-dependent. After publishing, `LIST` the committed `version$N`, not `live`, and check the file count and that your new files actually landed.
+
 ## When you add or rename a skill
 
-Three lists have to stay in step, and the third is the one people forget:
+Four lists have to stay in step, and the last two are the ones people forget:
 
 - `README.md`, the skills table.
 - `assets/scaffold/COCO.md`, the skills list. This file is copied into every user's notes repo, so a stale entry there is a stale entry in everyone's repo.
-- `.cortex-plugin/plugin.json`, but only the `description`, and only if it no longer covers what the plugin does. Leave `version` alone.
+- `SETUP.md`, but only if the skill adds a prerequisite. This is what a new user reads after installing.
+- `.cortex-plugin/plugin.json`, the `description`, and only if it no longer covers what the plugin does or is missing a new prerequisite. Leave `version` alone.
 
 ## Checklist before you ask for review
 
 - Descriptive branch and PR title, and a description that says what you tested.
 - One `SKILL.md`, no per-skill `README.md`, directory name matches frontmatter `name`.
 - Prefixed name in an existing family.
-- Read-only stated if it is read-only, `_internal/writing-style.md` read if it drafts prose.
+- Read-only stated if it is read-only, `_internal/writing-style.md` read if it drafts prose, and the skill stops rather than guessing if it is missing.
+- Bundled files referenced through `${CORTEX_PLUGIN_ROOT}`, nothing linking outside the plugin tree.
 - Dependencies declared, missing-dependency behaviour defined, nothing local to you hardcoded.
+- Any new prerequisite added to both the manifest `description` and `SETUP.md`.
 - SQL run against a real account, with output pasted into the PR.
-- `README.md` table and `COCO.md` list updated, `plugin.json` version untouched.
+- `README.md` table, `COCO.md` list and `SETUP.md` updated, `plugin.json` version untouched.
 
 ## Releasing
 
