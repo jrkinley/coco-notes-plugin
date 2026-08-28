@@ -76,7 +76,15 @@ This plugin is published to the Cortex plugins catalog, and a catalog install is
 
 **Hidden files are not uploaded, at any depth.** Publish skips them silently, and not just at the root: a nested `assets/scaffold/.gitignore` is dropped just as surely as a root `.mcp.json`. Only the `.cortex-plugin/` manifest directory is carried. Verified by publishing and listing: 29 files on disk, 26 shipped, the three missing ones being exactly the three dotfiles.
 
-This is why hooks are declared inline in the manifest rather than in a root `.hooks.json`, and why the two dotfiles we genuinely need to ship travel without their leading dot (`assets/scaffold/gitignore`, `skills/slides-deploy/assets/dockerignore`) and are renamed by the skill that copies them. If your skill needs to ship a dotfile, do the same, and say so in the skill body so the rename is not lost.
+This is why the two dotfiles we genuinely need to ship travel without their leading dot (`assets/scaffold/gitignore`, `skills/slides-deploy/assets/dockerignore`) and are renamed by the skill that copies them. If your skill needs to ship a dotfile, do the same, and say so in the skill body so the rename is not lost. Note that `hooks/hooks.json` is not hidden and does ship; only a *root* `.hooks.json` or `.mcp.json` is dropped. We declare hooks inline in the manifest, which is equally supported and leaves nothing to chance.
+
+**The executable bit does not survive publish.** An installed hook script arrives `-rw-r--r--`, so a shebang alone will not run it. Invoke scripts explicitly, as the manifest does with `/bin/sh ${CORTEX_PLUGIN_ROOT}/hooks/...`.
+
+**Inject context on `UserPromptSubmit`, not `SessionStart`.** On CoCo Desktop and CLI 1.1.58, `SessionStart` hooks run but their `additionalContext` is discarded. Verified with a throwaway probe plugin registering four hooks emitting distinct canaries: `SessionStart` as top-level JSON, as nested `hookSpecificOutput`, and as bare text, plus `UserPromptSubmit`. All four ran; only the `UserPromptSubmit` canary reached the agent. The XO plugin reaches the same conclusion and injects its primary reminder on every prompt.
+
+Because that event fires on every prompt, anything expensive must be gated. Our hook keeps per-session state keyed by `session_id`, sends the full writing-style guide once, and sends a short reminder thereafter. State must be keyed per session or it bleeds across concurrent ones.
+
+**Emit valid JSON, and treat the user's files as hostile.** `{"additionalContext":"..."}` to inject, `{"continue": true}` as the no-op. The docs say non-JSON stdout is also accepted, but a hook whose output is silently ignored is indistinguishable from one that never ran, so use the documented form. `_internal/` belongs to the user and may hold CRLF line endings or worse, so strip control characters and run byte-oriented under `LC_ALL=C`; BSD `tr` aborts on invalid UTF-8 otherwise. Fuzz any change to the escaping: that is how both of those bugs were caught.
 
 **Stage limits are 50 files, 2 MB per file, 10 MB total.** We ship 26 files at about 620 KB, so the realistic way to breach this is a skill shipping large binary assets. If yours needs more than a couple, raise it in an issue first.
 

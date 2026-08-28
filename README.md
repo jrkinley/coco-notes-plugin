@@ -117,7 +117,7 @@ Once changes are merged to `main`, a release is a deliberate act: bump `version`
 coco-notes-plugin/
   .cortex-plugin/plugin.json     Manifest: name, description (carries the prerequisites), version, hooks
   skills/                        The 10 skills (canonical source)
-  hooks/sessionstart.sh          Install-completeness check + per-session rule injection
+  hooks/userpromptsubmit.sh      Install-completeness check + per-session rule injection
   assets/scaffold/               What note-setup writes into a new notes repo
     COCO.md
     _templates/{meeting-note,interview-note}.md
@@ -132,4 +132,4 @@ coco-notes-plugin/
 - Skill frontmatter supports `name` and `description` only. Tool restrictions apply to agents, not skills.
 - Reference bundled assets from a skill with `${CORTEX_PLUGIN_ROOT}/assets/...`. Never a bare relative path, and never `${CLAUDE_PLUGIN_ROOT}`.
 - Skills reference notes-repo-relative paths (`_templates/`, `_internal/`, `<letter>/`); they work because they run against the user's scaffolded repo, so no per-user path edits are needed. A skill that depends on those paths must stop and point at `note-setup` when they are absent, rather than carrying on in a generic voice.
-- The plugin ships one `SessionStart` hook, declared inline in the manifest. It stays silent outside a notes repo, prompts for setup if the marker is missing, and otherwise injects the user's writing style and profile for the session.
+- The plugin ships one `UserPromptSubmit` hook, declared inline in the manifest. It stays silent outside a notes repo, prompts once for setup if the marker is missing, and otherwise supplies the user's writing style and profile in full on the first prompt of a session, then a short reminder on later prompts. `UserPromptSubmit` rather than `SessionStart` because `SessionStart` hooks run but their `additionalContext` is discarded; see the publishing constraints in [CONTRIBUTING.md](CONTRIBUTING.md).

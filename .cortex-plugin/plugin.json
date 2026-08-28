@@ -6,13 +6,13 @@
     "skills"
   ],
   "hooks": {
-    "SessionStart": [
+    "UserPromptSubmit": [
       {
         "matcher": "",
         "hooks": [
           {
             "type": "command",
-            "command": "/bin/sh ${CORTEX_PLUGIN_ROOT}/hooks/sessionstart.sh",
+            "command": "/bin/sh ${CORTEX_PLUGIN_ROOT}/hooks/userpromptsubmit.sh",
             "timeout": 10,
             "statusMessage": "Loading coco-notes context..."
           }

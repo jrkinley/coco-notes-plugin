@@ -16,11 +16,11 @@ Setup writes a marker at `_internal/.coco-notes-setup` when it finishes. That is
 
 ## 2. Check the plugin is live
 
-Open a new session with your notes folder as the working directory. The plugin injects your writing style and profile at session start, so ask the agent:
+Open a new session with your notes folder as the working directory. The plugin supplies your writing style and profile on your first prompt, so ask the agent:
 
 > What do you know about how I write?
 
-If it can answer, the session-start hook is firing and the install is live. If it cannot, see Troubleshooting below.
+If it can answer, the hook is firing and the install is live. If it cannot, see Troubleshooting below.
 
 Outside a notes folder the hook stays deliberately silent, so run this check from inside the repo you set up.
 
@@ -63,7 +63,7 @@ Heavier, and only needed if you build decks:
 
 **The `note-*` skills say the repo is not set up, but it is.** They look for `_internal/writing-style.md` relative to the working directory. Check you are in the folder you ran setup in.
 
-**Nothing is injected at session start.** The hook runs in a non-interactive shell that reads only `~/.zshenv`, not `.zshrc` or `.zprofile`. It is written in plain `sh` and resolves its tools by absolute path specifically to avoid this, so a PATH problem is unlikely, but if you have overridden `sh` or `sed` in an unusual way that is the first place to look. The failure is silent by design, so absence of context is the only symptom.
+**Nothing is injected on your first prompt.** The hook runs in a non-interactive shell that reads only `~/.zshenv`, not `.zshrc` or `.zprofile`. It is written in plain `sh` and resolves its tools by absolute path specifically to avoid this, so a PATH problem is unlikely, but if you have overridden `sh`, `sed`, `awk` or `tr` in an unusual way that is the first place to look. The failure is silent by design, so absence of context is the only symptom.
 
 **Setup ran but the marker is missing.** Re-run `/coco-notes:note-setup`. It is safe to run repeatedly; it will ask before overwriting anything.
 
