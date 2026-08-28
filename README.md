@@ -45,7 +45,13 @@ If you want to confirm you have the right listing first, this is it:
 snow://skill_catalog/USER$JKINLEY.SKILL_SHARING.COCO_NOTES/
 ```
 
-No version in that URI, so it resolves to whatever the current default version is. Leave it unversioned and you always get the latest.
+That unversioned form identifies the listing, but do not paste it into the **Import link** field: Desktop requires a version-pinned URI there and rejects one without it. Pin the version you want instead:
+
+```
+snow://skill_catalog/USER$JKINLEY.SKILL_SHARING.COCO_NOTES/versions/version$3/
+```
+
+Searching by name avoids the question entirely, which is why it is the route above. Either way, install is a copy rather than a live link, so to move to a later version afterwards use the **Sync** button (↻) on the plugin's detail page, or `cortex plugin update`.
 
 ### First-time setup
 
@@ -109,18 +115,21 @@ Once changes are merged to `main`, a release is a deliberate act: bump `version`
 ### Layout
 ```
 coco-notes-plugin/
-  .cortex-plugin/plugin.json     Manifest (name, description, version)
-  skills/                        The 9 skills + note-setup (canonical source)
+  .cortex-plugin/plugin.json     Manifest: name, description (carries the prerequisites), version, hooks
+  skills/                        The 10 skills (canonical source)
+  hooks/userpromptsubmit.sh      Install-completeness check + per-session rule injection
   assets/scaffold/               What note-setup writes into a new notes repo
     COCO.md
     _templates/{meeting-note,interview-note}.md
     _internal/{user-profile,writing-style}.md   Generic placeholders
     .gitignore
+  SETUP.md                       Post-install runbook; CoCo surfaces this after a catalog install
   README.md
   CONTRIBUTING.md                Contribution process and skill-authoring standards
 ```
 
 ### Conventions
 - Skill frontmatter supports `name` and `description` only. Tool restrictions apply to agents, not skills.
-- Reference bundled assets from a skill with `${CLAUDE_PLUGIN_ROOT}/assets/...`.
-- Skills reference notes-repo-relative paths (`_templates/`, `_internal/`, `<letter>/`); they work because they run against the user's scaffolded repo, so no per-user path edits are needed.
+- Reference bundled assets from a skill with `${CORTEX_PLUGIN_ROOT}/assets/...`. Never a bare relative path, and never `${CLAUDE_PLUGIN_ROOT}`.
+- Skills reference notes-repo-relative paths (`_templates/`, `_internal/`, `<letter>/`); they work because they run against the user's scaffolded repo, so no per-user path edits are needed. A skill that depends on those paths must stop and point at `note-setup` when they are absent, rather than carrying on in a generic voice.
+- The plugin ships one `UserPromptSubmit` hook, declared inline in the manifest. It stays silent outside a notes repo, prompts once for setup if the marker is missing, and otherwise supplies the user's writing style and profile in full on the first prompt of a session, then a short reminder on later prompts. `UserPromptSubmit` rather than `SessionStart` because `SessionStart` hooks run but their `additionalContext` is discarded; see the publishing constraints in [CONTRIBUTING.md](CONTRIBUTING.md).

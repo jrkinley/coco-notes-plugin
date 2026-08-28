@@ -49,7 +49,9 @@ ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:no
 
 ### Step 1: Place the generator
 
-Copy `assets/generate-narration.sh` into the deck's `tools/` folder (next to `index.html`'s parent). It writes clips to `../assets/audio`. Make it executable: `chmod +x tools/generate-narration.sh`.
+Copy `${CORTEX_PLUGIN_ROOT}/skills/slides-narrate/assets/generate-narration.sh` into the deck's `tools/` folder (next to `index.html`'s parent). It writes clips to `../assets/audio`. Make it executable: `chmod +x tools/generate-narration.sh`.
+
+The generator is the only file this skill ships, and it is always read through `${CORTEX_PLUGIN_ROOT}`. Every other `assets/...` path in this skill is relative to the deck.
 
 ### Step 2: Set the scripts
 

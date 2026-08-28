@@ -1,7 +1,25 @@
 {
   "name": "coco-notes",
-  "description": "A note-taking harness and field-engagement accelerator for people who would rather be in the meeting than writing it up afterwards. It captures customer meetings and interviews, preps you before a call so you walk in knowing the story, keeps your follow-ups honest, and, when the occasion calls for a bit of theatre, builds cinematic narrated slide decks. Run note-setup once; it scaffolds your notes repo, learns your writing style, and then gets out of your way.",
+  "description": "A note-taking harness and field-engagement accelerator for people who would rather be in the meeting than writing it up afterwards. It captures customer meetings and interviews, preps you before a call so you walk in knowing the story, keeps your follow-ups honest, and, when the occasion calls for a bit of theatre, builds cinematic narrated slide decks. SETUP REQUIRED: run /coco-notes:note-setup once in the folder you want as your notes repo. It scaffolds the repo, learns your writing style, and then gets out of your way. Until it has run, the note-* skills will stop and tell you so rather than draft in a generic voice. PREREQUISITES, none of which the catalog enforces: the note-* family needs nothing beyond setup, except that note-start uses a Google Calendar MCP to offer meetings, note-import-zoom needs a Zoom MCP for transcripts, and note-start and note-salesforce-check need a read-only Salesforce MCP for the use-case flow; each degrades to asking you instead. The slides-* family is heavier: slides-narrate needs an ElevenLabs API key and ffmpeg or afinfo for clip timing, and slides-deploy needs Docker and an authenticated snow CLI. See SETUP.md in the plugin for the full runbook.",
   "version": "0.1.0",
+  "skills": [
+    "skills"
+  ],
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/sh ${CORTEX_PLUGIN_ROOT}/hooks/userpromptsubmit.sh",
+            "timeout": 10,
+            "statusMessage": "Loading coco-notes context..."
+          }
+        ]
+      }
+    ]
+  },
   "author": {
     "name": "James Kinley",
     "email": "james.kinley@snowflake.com"

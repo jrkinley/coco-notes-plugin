@@ -7,7 +7,7 @@ description: "Turn a finished Zoom meeting into a filed customer note: find the 
 
 Take a recorded Zoom meeting and file it as a customer note, without manual copy-paste of the transcript.
 
-Before starting, read `_internal/user-profile.md` and `_internal/writing-style.md`.
+Before starting, read `_internal/user-profile.md` and `_internal/writing-style.md`. If `_internal/writing-style.md` is not there, you are not in a coco-notes repo, or setup has not run. Stop, say so, and tell the user to run `/coco-notes:note-setup` or change to their notes folder. Do not fall back to a generic voice.
 
 ## Steps
 

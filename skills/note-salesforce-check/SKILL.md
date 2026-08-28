@@ -7,7 +7,7 @@ description: "Flag use cases that are out of sync between Salesforce and the cus
 
 Reconcile the customer profiles against Salesforce so the profiles stay honest. The Salesforce MCP is **read-only**: this skill reports drift and proposes profile edits, but never writes to Salesforce.
 
-Before starting, read `_internal/writing-style.md` for voice.
+Before starting, read `_internal/writing-style.md` for voice. If that file is not there, you are not in a coco-notes repo, or setup has not run. Stop, say so, and tell the user to run `/coco-notes:note-setup` or change to their notes folder. Do not fall back to a generic voice.
 
 ## Scope
 

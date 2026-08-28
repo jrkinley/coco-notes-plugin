@@ -7,7 +7,7 @@ description: "Build a pre-call briefing for a customer from the notes folder: re
 
 Produce a concise pre-call briefing for a customer so the note-taker walks into the meeting up to speed. Read-only: this skill gathers and summarises, it does not change any notes.
 
-Before starting, read `_internal/user-profile.md` and `_internal/writing-style.md` so the briefing is pitched at the right level and in the right voice.
+Before starting, read `_internal/user-profile.md` and `_internal/writing-style.md` so the briefing is pitched at the right level and in the right voice. If `_internal/writing-style.md` is not there, you are not in a coco-notes repo, or setup has not run. Stop, say so, and tell the user to run `/coco-notes:note-setup` or change to their notes folder. Do not fall back to a generic voice.
 
 ## Steps
 

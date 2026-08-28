@@ -66,23 +66,56 @@ Check for join fanout. If a join can produce more than one row per entity, eithe
 
 Describe what a query returns in terms of what it actually returns. If a column called `CALL_URL` holds meeting join links rather than recording links, the skill must not call it a recording link.
 
+## Publishing constraints
+
+This plugin is published to the Cortex plugins catalog, and a catalog install is a copy of the plugin tree on someone else's machine, not a checkout of this repo. Several things that work fine here break there. The rules below exist because of how publishing works, not because of taste, so they are not negotiable in review.
+
+**Reference bundled files through `${CORTEX_PLUGIN_ROOT}`.** Never a bare relative path, and never `${CLAUDE_PLUGIN_ROOT}`. A bare `assets/scaffold.html` resolves against the user's working directory, which is their notes repo, not the plugin. The `slides-*` skills are the trap here, because they use `assets/` for two different things: files the plugin ships, which take the prefix, and the deck being built, which stays bare. Say which you mean.
+
+**Nothing in the tree may link to anything outside it.** Only the plugin tree is uploaded, so a skill pointing at `../docs` or at this file is a dead link for every installed user. `SETUP.md` in particular has to stand alone.
+
+**Hidden files are not uploaded, at any depth.** Publish skips them silently, and not just at the root: a nested `assets/scaffold/.gitignore` is dropped just as surely as a root `.mcp.json`. Only the `.cortex-plugin/` manifest directory is carried. Verified by publishing and listing: 29 files on disk, 26 shipped, the three missing ones being exactly the three dotfiles.
+
+This is why the two dotfiles we genuinely need to ship travel without their leading dot (`assets/scaffold/gitignore`, `skills/slides-deploy/assets/dockerignore`) and are renamed by the skill that copies them. If your skill needs to ship a dotfile, do the same, and say so in the skill body so the rename is not lost. Note that `hooks/hooks.json` is not hidden and does ship; only a *root* `.hooks.json` or `.mcp.json` is dropped. We declare hooks inline in the manifest, which is equally supported and leaves nothing to chance.
+
+**The executable bit does not survive publish.** An installed hook script arrives `-rw-r--r--`, so a shebang alone will not run it. Invoke scripts explicitly, as the manifest does with `/bin/sh ${CORTEX_PLUGIN_ROOT}/hooks/...`.
+
+**Inject context on `UserPromptSubmit`, not `SessionStart`.** On CoCo Desktop and CLI 1.1.58, `SessionStart` hooks run but their `additionalContext` is discarded. Verified with a throwaway probe plugin registering four hooks emitting distinct canaries: `SessionStart` as top-level JSON, as nested `hookSpecificOutput`, and as bare text, plus `UserPromptSubmit`. All four ran; only the `UserPromptSubmit` canary reached the agent. The XO plugin reaches the same conclusion and injects its primary reminder on every prompt.
+
+Because that event fires on every prompt, anything expensive must be gated. Our hook keeps per-session state keyed by `session_id`, sends the full writing-style guide once, and sends a short reminder thereafter. State must be keyed per session or it bleeds across concurrent ones.
+
+**Emit valid JSON, and treat the user's files as hostile.** `{"additionalContext":"..."}` to inject, `{"continue": true}` as the no-op. The docs say non-JSON stdout is also accepted, but a hook whose output is silently ignored is indistinguishable from one that never ran, so use the documented form. `_internal/` belongs to the user and may hold CRLF line endings or worse, so strip control characters and run byte-oriented under `LC_ALL=C`; BSD `tr` aborts on invalid UTF-8 otherwise. Fuzz any change to the escaping: that is how both of those bugs were caught.
+
+**Stage limits are 50 files, 2 MB per file, 10 MB total.** We ship 26 files at about 620 KB, so the realistic way to breach this is a skill shipping large binary assets. If yours needs more than a couple, raise it in an issue first.
+
+**`publish` shares by default.** `--to-role` and `--discoverable` read like opt-in flags but are not: a bare `cortex plugin publish` grants READ to PUBLIC and sets `DISCOVERABLE = TRUE`. It also derives the extension name from the manifest `name`, so publishing from a branch creates a new version of the live `COCO_NOTES` that everyone installs from, and the default version follows the newest. Never publish from a branch. To test a publish, use `--name` with a throwaway name and `unpublish` straight afterwards.
+
+**New prerequisites go in two places.** The manifest `description` and `SETUP.md`. The catalog does not enforce prerequisites and nothing checks them at install time, so an undocumented dependency is a consumer hitting an unexplained failure. Say what breaks without it and how the skill degrades.
+
+**A skill that depends on the notes repo must fail loudly when it is absent.** Reading `_internal/writing-style.md` and carrying on when it is missing is worse than stopping, because the user gets generic prose that looks like it worked. Stop and point at `note-setup`.
+
+**Verify a publish, do not assume it.** Flat verbatim upload is CLI-version-dependent. After publishing, `LIST` the committed `version$N`, not `live`, and check the file count and that your new files actually landed.
+
 ## When you add or rename a skill
 
-Three lists have to stay in step, and the third is the one people forget:
+Four lists have to stay in step, and the last two are the ones people forget:
 
 - `README.md`, the skills table.
 - `assets/scaffold/COCO.md`, the skills list. This file is copied into every user's notes repo, so a stale entry there is a stale entry in everyone's repo.
-- `.cortex-plugin/plugin.json`, but only the `description`, and only if it no longer covers what the plugin does. Leave `version` alone.
+- `SETUP.md`, but only if the skill adds a prerequisite. This is what a new user reads after installing.
+- `.cortex-plugin/plugin.json`, the `description`, and only if it no longer covers what the plugin does or is missing a new prerequisite. Leave `version` alone.
 
 ## Checklist before you ask for review
 
 - Descriptive branch and PR title, and a description that says what you tested.
 - One `SKILL.md`, no per-skill `README.md`, directory name matches frontmatter `name`.
 - Prefixed name in an existing family.
-- Read-only stated if it is read-only, `_internal/writing-style.md` read if it drafts prose.
+- Read-only stated if it is read-only, `_internal/writing-style.md` read if it drafts prose, and the skill stops rather than guessing if it is missing.
+- Bundled files referenced through `${CORTEX_PLUGIN_ROOT}`, nothing linking outside the plugin tree.
 - Dependencies declared, missing-dependency behaviour defined, nothing local to you hardcoded.
+- Any new prerequisite added to both the manifest `description` and `SETUP.md`.
 - SQL run against a real account, with output pasted into the PR.
-- `README.md` table and `COCO.md` list updated, `plugin.json` version untouched.
+- `README.md` table, `COCO.md` list and `SETUP.md` updated, `plugin.json` version untouched.
 
 ## Releasing
 

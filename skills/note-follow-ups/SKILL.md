@@ -7,7 +7,7 @@ description: "Roll up open action items across all customer notes into one list,
 
 Scan the whole notes corpus for open action items and present them as one organised list. Read-only: this skill reports, it does not tick items off or edit notes.
 
-Before starting, read `_internal/writing-style.md` for voice.
+Before starting, read `_internal/writing-style.md` for voice. If that file is not there, you are not in a coco-notes repo, or setup has not run. Stop, say so, and tell the user to run `/coco-notes:note-setup` or change to their notes folder. Do not fall back to a generic voice.
 
 ## Steps
 

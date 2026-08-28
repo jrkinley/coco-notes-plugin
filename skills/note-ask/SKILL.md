@@ -7,7 +7,7 @@ description: "Answer a natural-language question across the whole notes corpus, 
 
 Answer a question by searching and reading across the notes corpus, then synthesising a grounded answer with citations. Read-only.
 
-Before answering, read `_internal/writing-style.md` for voice.
+Before answering, read `_internal/writing-style.md` for voice. If that file is not there, you are not in a coco-notes repo, or setup has not run. Stop, say so, and tell the user to run `/coco-notes:note-setup` or change to their notes folder. Do not fall back to a generic voice.
 
 ## Steps
 
