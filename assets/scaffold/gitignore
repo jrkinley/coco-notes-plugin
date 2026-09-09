@@ -1,3 +1,12 @@
 .DS_Store
 *.log
 .env
+
+# Large assets kept on local disk only, not in git.
+# Anything re-downloadable from source (brand assets) plus third-party reference
+# material. Generated artwork and approved audio are NOT here: they cannot be
+# regenerated identically, so they are worth tracking despite their size.
+_internal/brand/*
+!_internal/brand/README.md
+_internal/reference/*
+!_internal/reference/README.md

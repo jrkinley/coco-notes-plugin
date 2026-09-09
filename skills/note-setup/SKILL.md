@@ -16,6 +16,7 @@ The scaffold sources live in this plugin's `assets/scaffold/`. Reference them wi
    - `COCO.md` — the project instructions.
    - `_templates/meeting-note.md` and `_templates/interview-note.md`.
    - `_internal/user-profile.md` and `_internal/writing-style.md` — the generic placeholders (Parts B and C replace these with personalised versions).
+   - `_internal/{people,reporting,artefacts,brand,reference}/README.md` — copy each one. The READMEs explain what belongs in each folder, and they are also what makes git track a folder that is otherwise empty. Do not skip them and do not summarise them; copy them verbatim.
    - `.gitignore`, copied from the scaffold's `gitignore` (no leading dot). It ships without the dot because publish drops hidden files from the plugin tree; restore the dot when you write it into the user's repo.
    - `_inbox/` — create the empty inbox (add a `.gitkeep` if the platform needs it to track an empty dir).
 3. **Offer git.** Ask whether to `git init` the folder now. If yes, initialise and make no commit yet (the user commits when ready). Do not create a remote.

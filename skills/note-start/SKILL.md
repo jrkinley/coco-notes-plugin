@@ -151,8 +151,8 @@ Interviews are a distinct flow from customer meetings. When the user asks to sta
 Before creating the file, read `_internal/user-profile.md` and `_internal/writing-style.md`.
 
 1. Use the `_templates/interview-note.md` template, not the meeting-note template.
-2. File location is `_internal/interviews/YYYY/MM/YYYY-MM-DD-<candidate-slug>.md` (calendar year/month), not `_inbox/`. Candidate slug is lowercase, hyphenated (e.g. `michael-gabriel`).
-3. Pre-load the note from whatever context is provided: the candidate's CV or resume (read the attached file), the job posting, and any hiring-manager brief. Fill the Interview Brief, Candidate Summary, and one pre-set question per theme the brief asks you to probe, each with an italic "listening for" note and an empty `[Notes]` block. Model the structure on the most recent filed interview note in `_internal/interviews/`.
+2. File location is `_internal/people/interviews/YYYY/MM/YYYY-MM-DD-<candidate-slug>.md` (calendar year/month), not `_inbox/`. Candidate slug is lowercase, hyphenated (e.g. `michael-gabriel`).
+3. Pre-load the note from whatever context is provided: the candidate's CV or resume (read the attached file), the job posting, and any hiring-manager brief. Fill the Interview Brief, Candidate Summary, and one pre-set question per theme the brief asks you to probe, each with an italic "listening for" note and an empty `[Notes]` block. Model the structure on the most recent filed interview note in `_internal/people/interviews/`.
 4. Tell the user the file path and: "Type directly in the editor during your call. When you're done, just tell me to process it."
 
 ### Processing an interview note
@@ -161,7 +161,7 @@ When the user says they are done (e.g. "process my interview notes", "file this"
 
 Before processing, read `_internal/user-profile.md` and `_internal/writing-style.md`.
 
-1. Read the interview note (it is already in `_internal/interviews/YYYY/MM/`, not `_inbox/`, so there is no move step).
+1. Read the interview note (it is already in `_internal/people/interviews/YYYY/MM/`, not `_inbox/`, so there is no move step).
 2. Clean the captured shorthand under each theme into readable prose. Fix obvious typos. Preserve all detail, readability not summarisation. Note any theme that was not reached.
 3. Fill the Recommendation section: overall call with a one-line rationale, Questions Asked & Answers Given, the four Snowflake values, Candidate Communicates Clearly, and General Feedback. Apply the writing-style guide.
 4. **Prepare the Ashby responses for review.** These map to the fields submitted in Ashby. Present them in chat for review before considering the task done, and ask whether to adjust (especially the recommendation score) before finalising:
@@ -184,4 +184,4 @@ Before processing, read `_internal/user-profile.md` and `_internal/writing-style
 - Tags should be lowercase, hyphenated (e.g., openflow, sql-server, iceberg, snowpipe-streaming).
 - Customer slugs are lowercase, hyphenated (e.g., funding-circle, tp-icap, ed-f-man).
 - Workshop assets belong in a dated subfolder at `<letter>/<customer>/YYYY/MM/YYYY-MM-DD-workshop-slug/`, not in `_inbox/`.
-- Interview notes are a separate flow: they live in `_internal/interviews/YYYY/MM/`, use `_templates/interview-note.md`, skip the Salesforce step, and produce Ashby responses on processing. See the Interview notes (variant) section.
+- Interview notes are a separate flow: they live in `_internal/people/interviews/YYYY/MM/`, use `_templates/interview-note.md`, skip the Salesforce step, and produce Ashby responses on processing. See the Interview notes (variant) section.

@@ -26,11 +26,21 @@ Outside a notes folder the hook stays deliberately silent, so run this check fro
 
 ## Upgrading from an earlier version
 
-Nothing to do. If you already have a notes repo, it keeps working and your writing style is picked up as before.
+One thing to do, if you have ever filed an interview note: interviews have moved from `_internal/interviews/` to `_internal/people/interviews/`. The skills now write to the new path, so your existing notes need moving once. Nothing moves them for you, and nothing is lost if you forget — your old notes stay where they are, they just stop being alongside the new ones.
 
-The detail, in case you are curious: this version introduces a `_internal/.coco-notes-setup` marker so the plugin can tell a set-up repo from a half-finished one. Repos created before the marker existed obviously do not have it, so the plugin also accepts a personalised `_internal/writing-style.md` as proof that setup ran. Your repo is recognised either way, and the marker appears on its own the next time you re-run `/coco-notes:note-setup`.
+```
+git mv _internal/interviews _internal/people/interviews
+```
 
-Existing decks are unaffected. The `slides-*` skills now ship two files under slightly different names, but that only changes what a new deck is built from, not decks you have already built.
+If the repo is not under git, move the folder however you normally would. Then update the directory tree and the `_internal/people/interviews/` references in your own `COCO.md`, which is yours to edit and is not overwritten by a plugin update.
+
+The move is part of a wider grouping of `_internal`: people notes under `people/`, recurring reporting under `reporting/`, reusable technical assets under `artefacts/`, and two untracked folders, `brand/` for re-downloadable brand assets and `reference/` for third-party PDFs. A fresh `/coco-notes:note-setup` scaffolds all of these with a README in each explaining what belongs there. An existing repo does not get them retroactively, so add whichever you want by hand, or copy the READMEs from the plugin's `assets/scaffold/_internal/`.
+
+Everything else needs no action. Your writing style is picked up as before.
+
+The detail, in case you are curious: an earlier version introduced a `_internal/.coco-notes-setup` marker so the plugin can tell a set-up repo from a half-finished one. Repos created before the marker existed obviously do not have it, so the plugin also accepts a personalised `_internal/writing-style.md` as proof that setup ran. Your repo is recognised either way, and the marker appears on its own the next time you re-run `/coco-notes:note-setup`.
+
+Existing decks are unaffected. The `slides-*` skills ship two files under slightly different names than they once did, but that only changes what a new deck is built from, not decks you have already built.
 
 ## Prerequisites
 

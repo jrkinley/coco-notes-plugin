@@ -9,13 +9,27 @@ The skills that drive this workflow (`note-start`, `note-prep`, and the rest) ar
 ```
 _inbox/              Drop zone for quick captures and live notes
 _internal/           Non-customer assets
-  user-profile.md    Your background, role, and working style
-  writing-style.md   The voice and style guide all generated text follows
-  interviews/
-    YYYY/
-      MM/            Interview notes — one file per candidate
+  user-profile.md    Your background, role, and working style                    [pinned]
+  writing-style.md   The voice and style guide all generated text follows        [pinned]
+  people/
+    interviews/
+      YYYY/
+        MM/          Interview notes — one file per candidate                    [pinned]
+    1-1s/
+      <person-slug>/
+        YYYY-MM-DD-topic.md            One-to-one notes, one folder per person
+  reporting/
+    qbr/
+      FYxxQx/                          One folder per cycle, self-contained
+        index.html                     The deck
+        assets/                        Deck images
+        notes/                         Prep notes and supporting data
   slides/
-    <deck-name>/     Internal decks and presentation assets
+    <deck-name>/     Standalone internal decks and presentation assets
+  artefacts/
+    <tool>/<name>/   Reusable technical assets (flow definitions, configs, code)
+  brand/             Local cache of brand assets — untracked
+  reference/         Third-party papers and PDFs — untracked
 _templates/          Standard note formats (meeting-note, interview-note)
 <letter>/            Alphabetical customer folders
   <customer>/
@@ -25,6 +39,20 @@ _templates/          Standard note formats (meeting-note, interview-note)
         YYYY-MM-DD-topic-slug.md       Individual meeting notes
         YYYY-MM-DD-workshop-slug/      Workshop assets (self-contained)
 ```
+
+Paths marked `[pinned]` are hard-coded by the coco-notes plugin's skills. Moving them breaks the skills, so leave them where they are.
+
+Each folder under `_internal/` has a README explaining what belongs in it. Delete any you do not need — `reporting/` and `1-1s/` are the usual candidates.
+
+### Where a deck lives
+
+Three homes, and the deck's owner decides which:
+
+- **Customer deck** — with the customer, at `<letter>/<customer>/YYYY/MM/YYYY-MM-DD-workshop-slug/`. Self-contained, so it stays intelligible next to the meeting note that explains it.
+- **Reporting deck** — with its cycle, at `_internal/reporting/qbr/FYxxQx/`. The cycle owns the deck, its prep notes and its data together.
+- **Anything else** — `_internal/slides/<deck-name>/`. Standalone internal decks with no customer and no cycle.
+
+Every deck is self-contained: asset paths are relative to the deck folder, because a deck may be copied elsewhere or containerised and deployed on its own. Never reference an asset across folders.
 
 ---
 
@@ -54,9 +82,18 @@ All text generated, reformatted, or drafted in this project follows the writing-
 2. When creating a new note, use the template from `_templates/meeting-note.md`.
 3. Name new notes as `YYYY-MM-DD-topic-slug.md` and save to `YYYY/MM/` within the customer folder.
 
-### When working in `_internal/interviews/`
+### When working in `_internal/people/interviews/`
 1. When creating a new interview note, use the template from `_templates/interview-note.md`.
-2. Name new notes as `YYYY-MM-DD-candidate-name.md` and save to `YYYY/MM/` within `_internal/interviews/`.
+2. Name new notes as `YYYY-MM-DD-candidate-name.md` and save to `YYYY/MM/` within `_internal/people/interviews/`.
+
+### When working in `_internal/people/1-1s/`
+1. One folder per person, named `<person-slug>` (lowercase, hyphenated).
+2. Name notes as `YYYY-MM-DD-topic.md` inside that person's folder. No year/month nesting — a one-to-one series reads better as a flat chronological list per person.
+
+### When working in `_internal/reporting/`
+1. A reporting cycle owns everything about it: the deck, its prep notes, its supporting data.
+2. QBRs live at `_internal/reporting/qbr/FYxxQx/`, with the deck as `index.html`, images in `assets/`, and prep notes in `notes/`.
+3. Start a new folder for each cycle rather than editing the last one. Previous cycles are the record of what was said.
 
 ### Workshop prep and assets
 When building workshop prep or assets, create a dated folder at `<letter>/<customer>/YYYY/MM/YYYY-MM-DD-workshop-slug/`. Keep all assets self-contained inside it. The companion meeting note (`YYYY-MM-DD-workshop-slug.md`) sits alongside the folder at the same level.
@@ -125,6 +162,16 @@ After a customer note is filed, always run this flow. The Salesforce MCP is read
 - **note-salesforce-check** — flag use cases out of sync between Salesforce and profiles.
 - **note-setup** — one-time onboarding (scaffold this repo, build your profile and writing-style guide).
 - **slides-build / slides-narrate / slides-deploy** — build, narrate, and host cinematic HTML decks.
+
+## Brand and Large Files
+
+Before generating any branded visual asset (slides, decks, one-pagers), check your organisation's brand guidelines. For Snowflake, that is **https://www.snowflake.com/brand-guidelines/**. Do not improvise logo files, colour codes, or typography from memory.
+
+If a brand asset is missing locally, download it into `_internal/brand/`, then copy it into the deck's own `assets/`. That folder is a download cache, not somewhere decks point at, and its contents are deliberately untracked. Do not commit brand assets.
+
+Before staging any binary file over 1 MB, ask whether it should be tracked in git or left on local disk only. State the file size in the question. Never assume tracking.
+
+The test is whether the file can be reproduced. Brand assets and third-party PDFs are re-downloadable, so they stay out of git. Generated artwork and approved audio usually cannot be regenerated identically, so they are worth tracking despite their size — losing them means losing them.
 
 ## Git Workflow
 
